@@ -24,10 +24,12 @@ def call(String yamlName) {
         closure = "${it.service.getVar()}"(projectConfig, it.version, closure);
     }
 
-    // we execute the top level closure so that the cascade starts.
-    try {
-        closure([:]);
-    } finally{
-        deleteDockerImages(projectConfig);
+    throttle([projectConfig.projectName]) {
+        // we execute the top level closure so that the cascade starts.
+        try {
+            closure([:]);
+        } finally{
+            deleteDockerImages(projectConfig);
+        }
     }
 }
